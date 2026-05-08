@@ -117,7 +117,7 @@ if game.PlaceId == PLACE_A then
 	runPlaceA()
 
 elseif game.PlaceId == PLACE_B then
-	task.wait()
+	task.wait(2)
 	runPlaceB()
 
 elseif game.PlaceId == PLACE_C then
