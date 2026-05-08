@@ -46,7 +46,7 @@ local function runPlaceB()
 		while true do
 			local randomBase = tpList[math.random(1, #tpList)]
 
-			hrp.CFrame = randomBase.CFrame + Vector3.new(0, 5, 0)
+			hrp.CFrame = randomBase.CFrame + Vector3.new(0, 13, 0)
 
 			task.wait(2)
 		end
