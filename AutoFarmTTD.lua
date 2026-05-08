@@ -17,7 +17,7 @@ local function runPlaceA()
 			TeleportService:Teleport(PLACE_B, LocalPlayer)
 		end
 
-		task.wait()
+		task.wait(5)
 	end
 end
 
