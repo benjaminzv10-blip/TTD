@@ -17,73 +17,56 @@ local function runPlaceA()
 			TeleportService:Teleport(PLACE_B, LocalPlayer)
 		end
 
-		task.wait(5)
+		task.wait()
 	end
 end
 
 local function runPlaceB()
-	local GuiService = game:GetService("GuiService")
 	local VirtualInputManager = game:GetService("VirtualInputManager")
 
-	local targets = {
-		workspace.Lifts:GetChildren()[16],
-		workspace.Lifts.ToiletHQ,
-		workspace.Lifts:GetChildren()[12],
-		workspace.Lifts:GetChildren()[15],
+	local localPlayer = Players.LocalPlayer
+
+	local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+	local hrp = character:WaitForChild("HumanoidRootPart")
+
+	local tpList = {
+		workspace.Lifts:GetChildren()[15].Base,
+		workspace.Lifts:GetChildren()[12].Base,
+		workspace.Lifts.ToiletHQ.Base,
+		workspace.Lifts:GetChildren()[16].Base,
 	}
 
-	local function teleportToModelGround(model)
-		local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-		local hrp = character:WaitForChild("HumanoidRootPart")
+	local playerGui = localPlayer:WaitForChild("PlayerGui")
 
-		local offsetHeight = 10
+	local lobby = playerGui:WaitForChild("Lobby")
+	local queueFrame = lobby:WaitForChild("QueueFrame")
+	local startButton = queueFrame:WaitForChild("Start")
 
-		if model:IsA("Model") then
-			local cf, size = model:GetBoundingBox()
-			local groundY = cf.Position.Y - (size.Y / 2)
-			hrp.CFrame = CFrame.new(cf.Position.X, groundY + offsetHeight, cf.Position.Z)
-		elseif model:IsA("BasePart") then
-			local groundY = model.Position.Y - (model.Size.Y / 2)
-			hrp.CFrame = CFrame.new(model.Position.X, groundY + offsetHeight, model.Position.Z)
+	task.spawn(function()
+		while true do
+			local randomBase = tpList[math.random(1, #tpList)]
+
+			hrp.CFrame = randomBase.CFrame + Vector3.new(0, 5, 0)
+
+			task.wait(2)
 		end
-	end
+	end)
 
-	local function teleportToRandom()
-		local target = targets[math.random(1, #targets)]
-		if target then
-			teleportToModelGround(target)
-		end
-	end
+	task.spawn(function()
+		while true do
+			if startButton and startButton:IsA("GuiButton") and startButton.Visible and startButton.Parent.Visible then
+				local x = startButton.AbsolutePosition.X + (startButton.AbsoluteSize.X / 2)
+				local y = startButton.AbsolutePosition.Y + (startButton.AbsoluteSize.Y / 2)
 
-	local function focusAndPressEnter()
-		local gui = LocalPlayer:WaitForChild("PlayerGui")
-		local lobby = gui:WaitForChild("Lobby")
-		local queueFrame = lobby:WaitForChild("QueueFrame")
+				local clickY = y + 36 
 
-		local t0 = tick()
-		while not queueFrame.Visible do
-			if tick() - t0 >= 2 then
-				teleportToRandom()
-				task.wait(0.5)
-				focusAndPressEnter()
-				return
+				VirtualInputManager:SendMouseButtonEvent(x, clickY, 0, true, game, 1)
+				task.wait()
+				VirtualInputManager:SendMouseButtonEvent(x, clickY, 0, false, game, 1)
 			end
 			task.wait()
 		end
-
-		local startBtn = queueFrame:FindFirstChild("Start")
-		if startBtn then
-			GuiService.SelectedObject = startBtn
-			task.wait(0.2)
-
-			VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
-			task.wait()
-			VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
-		end
-	end
-
-	teleportToRandom()
-	focusAndPressEnter()
+	end)
 end
 
 local function runPlaceC()
@@ -130,12 +113,11 @@ local function runPlaceC()
 	task.spawn(autoFlow)
 end
 
-
 if game.PlaceId == PLACE_A then
 	runPlaceA()
 
 elseif game.PlaceId == PLACE_B then
-	task.wait(3)
+	task.wait()
 	runPlaceB()
 
 elseif game.PlaceId == PLACE_C then
