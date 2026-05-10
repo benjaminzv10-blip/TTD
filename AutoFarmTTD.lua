@@ -23,9 +23,9 @@ end
 
 local function runPlaceB()
 	local VirtualInputManager = game:GetService("VirtualInputManager")
+	local RunService = game:GetService("RunService")
 
 	local localPlayer = Players.LocalPlayer
-
 	local character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 	local hrp = character:WaitForChild("HumanoidRootPart")
 
@@ -37,6 +37,20 @@ local function runPlaceB()
 	}
 
 	local playerGui = localPlayer:WaitForChild("PlayerGui")
+	
+	task.spawn(function()
+		local mainFrames = playerGui:WaitForChild("MainFrames", 10)
+		if mainFrames then
+			local notificationFrame = mainFrames:WaitForChild("NotificationFrame", 10)
+			if notificationFrame then
+				RunService.RenderStepped:Connect(function()
+					if notificationFrame.Visible ~= false then
+						notificationFrame.Visible = false
+					end
+				end)
+			end
+		end
+	end)
 
 	local lobby = playerGui:WaitForChild("Lobby")
 	local queueFrame = lobby:WaitForChild("QueueFrame")
@@ -45,9 +59,7 @@ local function runPlaceB()
 	task.spawn(function()
 		while true do
 			local randomBase = tpList[math.random(1, #tpList)]
-
 			hrp.CFrame = randomBase.CFrame + Vector3.new(0, 13, 0)
-
 			task.wait(2)
 		end
 	end)
@@ -57,7 +69,6 @@ local function runPlaceB()
 			if startButton and startButton:IsA("GuiButton") and startButton.Visible and startButton.Parent.Visible then
 				local x = startButton.AbsolutePosition.X + (startButton.AbsoluteSize.X / 2)
 				local y = startButton.AbsolutePosition.Y + (startButton.AbsoluteSize.Y / 2)
-
 				local clickY = y + 36 
 
 				VirtualInputManager:SendMouseButtonEvent(x, clickY, 0, true, game, 1)
