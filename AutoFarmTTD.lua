@@ -181,7 +181,7 @@ if game.PlaceId == PLACE_A then
 elseif game.PlaceId == PLACE_B then
     StartAntiStuck()
 
-    task.wait(2)
+    task.wait(5)
     runPlaceB()
 
 elseif game.PlaceId == PLACE_C then
